@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1006119083022",
+    "project_id": "flash-chat-709cc",
+    "storage_bucket": "flash-chat-709cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006119083022:android:78c38805754be18339b05f",
+        "android_client_info": {
+          "package_name": "co.UsamaNaseerBaig.flash_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006119083022-n0ulh8h0q8tk5hn3seqjdknf7d175mkp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjHWqDNVxoSsMpkbp80VxeK9VWMclyA-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006119083022-n0ulh8h0q8tk5hn3seqjdknf7d175mkp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006119083022:android:5b99452f8dd073cb39b05f",
+        "android_client_info": {
+          "package_name": "co.angel.angel_v1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006119083022-n0ulh8h0q8tk5hn3seqjdknf7d175mkp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjHWqDNVxoSsMpkbp80VxeK9VWMclyA-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006119083022-n0ulh8h0q8tk5hn3seqjdknf7d175mkp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
