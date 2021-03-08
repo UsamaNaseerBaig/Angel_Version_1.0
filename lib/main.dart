@@ -6,6 +6,7 @@ import 'package:angel_v1/view/angel_past_dealing.dart';
 import 'package:angel_v1/view/angel_personal_detail.dart';
 import 'package:angel_v1/view/angel_profile.dart';
 import 'package:angel_v1/view/angel_sign_up.dart';
+import 'package:angel_v1/view/billing_view.dart';
 import 'package:angel_v1/view/components.dart';
 import 'package:angel_v1/view/sign_complete_profile.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         AngelProfile.id :(BuildContext context) => AngelProfile(),
         AngelPastDealing.id :(BuildContext context) => AngelPastDealing(),
         AngelAcceptRequest.id :(BuildContext context) => AngelAcceptRequest(),
+        AngelBilling.id :(BuildContext context) => AngelBilling(),
         ShowImage.id :(BuildContext context) => ShowImage(),
       },
     );

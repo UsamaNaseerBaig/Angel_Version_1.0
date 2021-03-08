@@ -1,10 +1,11 @@
-import 'package:angel_v1/model/AngelCredential.dart';
+import 'package:angel_v1/controller/connection_request_controller.dart';
 import 'package:angel_v1/controller/AngelProfile.dart';
+import 'package:angel_v1/controller/earning_controller.dart';
 import 'package:angel_v1/view/angel_accept_request.dart';
 import 'package:angel_v1/view/angel_past_dealing.dart';
 import 'package:angel_v1/view/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'components.dart';
 
 void main() {
@@ -13,7 +14,8 @@ void main() {
 
 class AngelProfile extends StatefulWidget {
   static String id = "AngelTabProfile";
-  static String cnic='';
+  static String cnic = '';
+  static String angel_number = "";
   @override
   _AngelProfileState createState() => _AngelProfileState();
 }
@@ -30,7 +32,6 @@ class _AngelProfileState extends State<AngelProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
        getCurrentAngel();
   }
   Future<void> getCurrentAngel()async{
@@ -41,6 +42,7 @@ class _AngelProfileState extends State<AngelProfile> {
      personal = profile['personal_details'];
      setState(() {
        num = identity['number'];
+       AngelProfile.angel_number = identity['number'];
        AngelProfile.cnic = identity['cnic'];
        category = personal['category'];
        name = personal['full_name'];
@@ -92,67 +94,107 @@ class _AngelProfileState extends State<AngelProfile> {
               children: [
                Column(//tab bar for received requests
                  children: [
-                   RequestTile(
-                     ontap: (){
-                       Navigator.pushNamed(context, AngelAcceptRequest.id);
+                   StreamBuilder<QuerySnapshot>(
+                     stream: ConnectionRequestController.Request,
+                     builder: (context,snapshot){
+                       if (!snapshot.hasData || snapshot.hasError) return Center(child: CircularProgressIndicator(),);
+                       List<ConnectionTile> tile_List=  [];
+                       try{ //in case of crash
+                         String cust_name;
+                         String number;
+                         String budget;
+                         String Date;
+                         for (var snap in snapshot.data.docs){
+                           cust_name = snap['from'];
+                           final String message = snap['message'];
+                           budget = snap['budget'];
+                           number = snap['number'];
+                           Timestamp time = snap['time'];
+                           DateTime date = DateTime.fromMicrosecondsSinceEpoch(time.microsecondsSinceEpoch);
+                           Date = "${date.day}/${date.month}/${date.year}";
+                           var req = ConnectionTile(
+                             title: message,
+                             name: cust_name,
+                             Date: Date,
+                             number: number,
+                             desc: "",
+                             budget:budget,
+                             time: "${date.hour} : ${date.minute}",
+                           );
+                           tile_List.add(req);
+                         }
+                       }
+                       catch(e){
+                         print(e);
+                       }
+                       return Expanded(
+                         child: ListView.builder(
+                             itemBuilder: (context,index){
+                               return GestureDetector(
+                                 onTap: (){
+                                   Navigator.push(
+                                       context, new MaterialPageRoute(
+                                       builder: (context) => new AngelAcceptRequest(),
+                                       settings: RouteSettings(
+                                         arguments: AcceptRequestArgs(
+                                           name: tile_List[index].name,
+                                           Date: tile_List[index].Date,
+                                           number: tile_List[index].number,
+                                           budget: tile_List[index].budget,
+                                         )
+                                       )
+                                      )
+                                      );
+                                   },
+                                 child: ConnectionTile(
+                                   title: tile_List[index].title,
+                                   name: tile_List[index].name,
+                                   desc: tile_List[index].desc,
+                                   budget: tile_List[index].budget,
+                                   time: tile_List[index].time,
+                                 ),
+                               );
+                             },
+                           itemCount: tile_List.length,
+                         ),
+                       );
                      },
-                     title: "Usama",
-                     desc: "03201342330",
-                     icon: CircleAvatar(
-                       backgroundColor: kbackgroundColor,
-                       child: Icon(Icons.account_circle,size: 54,),
-                     ),
-                     end: Text("${DateTime.now().hour}:${DateTime.now().minute}"),
-                   ),
-                   SizedBox(
-                     height: 24,
-                     child: Divider(
-                       color: kTextColor,
-                       indent: 73,
-                       endIndent: 22,
-                     ),
-                   ),
-
-
+                   )
                  ],
                ),
                Column(//tab bar for Angel Main profile
                  children: [
                    Expanded(
-                     flex: 1,
+                     flex: 2,
                      child: Column(//for image,name,address,rating
+                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                        children: [
                          CircleAvatar(
                            backgroundColor: kbackgroundColor,
                            child: Icon(Icons.account_circle,size: 54,),
                          ),
                          SizedBox(
-                           height: 20,
+                           height: 10,
                          ),
                          Text(name,style: kTextStyle,),
                          Text(address,),
-                         SizedBox(
-                           height: 20,
-                         ),
-                         Expanded(
-                           child: Row(
-                             mainAxisAlignment: MainAxisAlignment.center,
-                             children: [
-                               Text("Rating",style: kTextStyle,),
-                               SizedBox(
-                                 width: 20,
-                               ),
-                               Icon(Icons.star,color: kFillerColour,),
-                               Icon(Icons.star,color: kFillerColour,),
-                               Icon(Icons.star,color: kFillerColour,),
-                             ],
-                           ),
+                         Row(
+                           mainAxisAlignment: MainAxisAlignment.center,
+                           children: [
+                             Text("Rating",style: kTextStyle,),
+                             SizedBox(
+                               width: 20,
+                             ),
+                             Icon(Icons.star,color: kFillerColour,),
+                             Icon(Icons.star,color: kFillerColour,),
+                             Icon(Icons.star,color: kFillerColour,),
+                           ],
                          ),
                        ],
                      ),
                    ),
                    Expanded(
-                     flex: 3,
+                     flex: 7,
                      child: ListView(
                        children: [
                          RequestTile(
@@ -234,87 +276,58 @@ class _AngelProfileState extends State<AngelProfile> {
                    Expanded
                      (
                      flex: 3,
-                       child: Column(
-                         children: [
-                           RequestTile(
-                             title: "June 2020",
-                             desc: "Date",
-                             icon: Icon(Icons.calendar_today),
-                           ),
-                           SizedBox(
-                             height: 24,
-                             child: Divider(
-                               color: kTextColor,
-                               indent: 73,
-                               endIndent: 22,
-                             ),
-                           ),
-                           RequestTile(
-                             title: "10",
-                             desc: "No of Clients",
-                             icon: Icon(Icons.account_circle),
-                           ),
-                           SizedBox(
-                             height: 24,
-                             child: Divider(
-                               color: kTextColor,
-                               indent: 73,
-                               endIndent: 22,
-                             ),
-                           ),
-                           RequestTile(
-                             title: "RS/-4000 Rupees",
-                             desc: "Earned",
-                             icon: Icon(Icons.attach_money),
-                           ),
-                           SizedBox(
-                             height: 24,
-                             child: Divider(
-                               color: kTextColor,
-                               indent: 73,
-                               endIndent: 22,
-                             ),
-                           ),
-                         ],
+                       child: StreamBuilder<QuerySnapshot>(
+                         stream: EarningController.angelEarning,
+                         builder: (context,snapshot){
+                           if (!snapshot.hasData || snapshot.hasError){
+                             print("i am about to generate progress");
+                             return Center(
+                               child: CircularProgressIndicator(
+                                 backgroundColor: kbackgroundColor,
+                               ),
+                             );
+                           }
+                           final bill_detail = snapshot.data.docs; //past dealings  are empty
+                           var no_of_client = bill_detail.length;
+                           double earned = 0;
+                           for (var bill in bill_detail){
+                             earned += double.parse(bill['charges']);
+                           }
+                           print("${earned} earned having clients ${no_of_client}");
+                           return Column(
+                             children: [
+                               RequestTile(
+                                 icon: Icon(Icons.account_circle_rounded),
+                                 title: no_of_client.toString(),
+                                 desc: "No of Clients",
+                               ),
+                               SizedBox(
+                                 height: 24,
+                                 child: Divider(
+                                   color: kTextColor,
+                                   indent: 73,
+                                   endIndent: 22,
+                                 ),
+                               ),
+                               RequestTile(
+                                 icon: Icon(Icons.attach_money_sharp),
+                                 title: earned.toString(),
+                                 desc: "Earned",
+                               ),
+                               SizedBox(
+                                 height: 24,
+                                 child: Divider(
+                                   color: kTextColor,
+                                   indent: 73,
+                                   endIndent: 22,
+                                 ),
+                               ),
+
+                             ],
+                           );
+                         },
                        )
                    ),
-                   Expanded(
-                     flex: 2,
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.end,
-                       children: [
-                         RequestTile(
-                           title: "RS/-1000 Rupees",
-                           desc: "Charges",
-                           icon: Icon(Icons.attach_money),
-                         ),
-                         SizedBox(
-                           height: 24,
-                           child: Divider(
-                             color: kTextColor,
-                             indent: 73,
-                             endIndent: 22,
-                           ),
-                         ),
-                         RequestTile(
-                           title: "1 july, 2020",
-                           desc: "Last Date",
-                           icon: Icon(Icons.calendar_today),
-                         ),
-                         SizedBox(
-                           height: 24,
-                           child: Divider(
-                             color: kTextColor,
-                             indent: 73,
-                             endIndent: 22,
-                           ),
-                         ),
-                       ],
-                     )
-                   ),
-                   ActionButton(
-                     name: "Pay Via",
-                   )
                  ],
                ),
               ],
@@ -325,5 +338,4 @@ class _AngelProfileState extends State<AngelProfile> {
     );
   }
 }
-
 

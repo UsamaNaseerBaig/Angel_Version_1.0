@@ -14,18 +14,18 @@ class AngelIdentityO{
   // void PrepareData(){
   //
   // }
-  Future<void> CompleteIdentity()async{
+  Future<bool> CompleteIdentity()async{
     await newAngel.AddIdentity(cnic,imageList);
-    print("added");
-
+    return true;
   }
 
   Future<bool> Register()async {
     newAngel=AngelCredential(
         number: number,
-        password: password
+        password: password,
+        cnic: cnic
     );
-    var status =   await  newAngel.CreateNewAngel();
+    var status =   await  newAngel.CreateNewAngel(cnic);
     if (status == true){
        return true;
      }

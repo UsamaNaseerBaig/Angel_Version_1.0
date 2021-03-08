@@ -4,6 +4,7 @@ import 'package:angel_v1/view/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AngelIdentity extends StatefulWidget {
 
@@ -38,11 +39,11 @@ class _AngelIdentityState extends State<AngelIdentity> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: _image.length == 2?Icon(Icons.check,size: 71,color: kFillerColour,):FloatingActionButton(
-        backgroundColor: kFillerColour,
-        onPressed:getImage,
-        child: Icon(Icons.add_a_photo,color: kTextColor,),
-      ),
+      // floatingActionButton: _image.length == 2?Icon(Icons.check,size: 71,color: kFillerColour,):FloatingActionButton(
+      //   backgroundColor: kFillerColour,
+      //   onPressed:getImage,
+      //   child: Icon(Icons.add_a_photo,color: kTextColor,),
+      // ),
       resizeToAvoidBottomInset: false,
       backgroundColor: kbackgroundColor,
       appBar: AppBar(
@@ -55,107 +56,124 @@ class _AngelIdentityState extends State<AngelIdentity> {
       body: SafeArea(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-              flex: 1,
-              child: Text("Kindly add Details",style: kLabelStyle,)),
-              Expanded(
-                flex: 1,
-                child: InputField(
-                  name: "Enter Your Phone Number",
-                  onChange: (newValue){
-                    setState(() {
-                      number = newValue;
-                    });
-                  },
-                  type: TextInputType.number,
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: InputField(
-                  name: "Enter Your CNIC Number",
-                  onChange: (newValue){
-                    setState(() {
-                      cnic = newValue;
-
-                    });
-                  },
-                  type: TextInputType.number,
-                ),
-              ),
               Text(
-                "Upload CNIC Front and Back photo",style: kTextStyle,
+                "Kindly add Details",style: kLabelStyle,
               ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  height: 150,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context,index){
-                      return GestureDetector(
-                        child: GetImageWidget(
-                            image: _image[index],
-                          width: 150,
-                          height: 300,
-                        ),
-                        onTap: (){
-                          Navigator.pushNamed(
-                              context,
-                              ShowImage.id,
-                              arguments:ScreenArgument(
-                                image: Image.file(_image[index]),
-                              )
-                          );
-                        },
+              SizedBox(
+                height: 40,
+              ),
+              InputField(
+                name: "Enter Your Phone Number",
+                onChange: (newValue){
+                  setState(() {
+                    number = newValue;
+                  });
+                },
+                type: TextInputType.number,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              InputField(
+                name: "Enter Your CNIC Number",
+                onChange: (newValue){
+                  setState(() {
+                    cnic = newValue;
 
-                      );
-                    },
-                    itemCount: _image.length,
-                  ),
-                ),
+                  });
+                },
+                type: TextInputType.number,
               ),
-              Expanded(
-                flex: 1,
-                child: ActionButton(
-                  name: "Complete Identity Proof",
-                  onTap: () async {
-                    print("cnic set");
-                    if (number.length == 11 && cnic.length == 13 && _image.length == 2) {
-                          await showModalBottomSheet<void>(
-                              context: context, builder: (BuildContext context) {
-                            return GeneratePin();
-                          });
-                          if (AngelIdentity.pin.length == 6) {
-                              AngelIdentityO angel_credential = AngelIdentityO(
-                                number: number,
-                                cnic: cnic,
-                                imageList: _image,
-                                password: AngelIdentity.pin,
+              SizedBox(
+                height: 40,
+              ),
+              // Expanded(
+              //   flex: 3,
+              //   child: Container(
+              //     height: 150,
+              //     width: MediaQuery.of(context).size.width,
+              //     child: ListView.builder(
+              //       shrinkWrap: true,
+              //       scrollDirection: Axis.horizontal,
+              //       itemBuilder: (context,index){
+              //         return GestureDetector(
+              //           child: GetImageWidget(
+              //               image: _image[index],
+              //             width: 150,
+              //             height: 300,
+              //           ),
+              //           onTap: (){
+              //             Navigator.pushNamed(
+              //                 context,
+              //                 ShowImage.id,
+              //                 arguments:ScreenArgument(
+              //                   image: Image.file(_image[index]),
+              //                 )
+              //             );
+              //           },
+              //
+              //         );
+              //       },
+              //       itemCount: _image.length,
+              //     ),
+              //   ),
+              // ),
+              ActionButton(
+                name: "Complete Identity Proof",
+                onTap: () async {
+                  print("cnic set");
+                  if (number.length == 11 && cnic.length == 13) {
+                        await showModalBottomSheet<void>(
+                            context: context, builder: (BuildContext context) {
+                          return GeneratePin();
+                        });
+                        if (AngelIdentity.pin.length == 6) {
+                            AngelIdentityO angel_credential = AngelIdentityO(
+                              number: number,
+                              cnic: cnic,
+                              password: AngelIdentity.pin,
+                            );
+                            var created = await angel_credential.Register();
+                            AngelIdentity.angel_id = cnic;
+                            if (created == true) {
+                              var completing = await angel_credential.CompleteIdentity();
+                              if (completing == true)
+                                {
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                      msg: "Identity Has been added Successfully",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.green,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  );
+                                }
+                            }
+                            else {
+                              Fluttertoast.showToast(
+                                  msg: "UnSuccessful",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
                               );
-                              var created = await angel_credential.Register();
-                              AngelIdentity.angel_id = cnic;
-                              if (created == true) {
-                                angel_credential.CompleteIdentity();
-                              }
-                              else {
-                                print("cannot create identity");
-                              }
-                          }
-                          else{
-                            print(AngelIdentity.pin);
-                          }
-                    }
-                    else{
-                      _showMyDialog(context);
-                    }
-                  },
-                ),
+                            }
+                        }
+                        else{
+                          print(AngelIdentity.pin);
+                        }
+                  }
+                  else{
+                    _showMyDialog(context);
+                  }
+                },
               )
             ],
           ),
@@ -175,7 +193,6 @@ Future<void> _showMyDialog(BuildContext context) async {
         children: <Widget>[
           Text('Make Sure your number is like 03224800342'),
           Text('Make Sure your cnic is like3520345345678'),
-          Text('Add front and back cnic photo'),
         ],
         action: <Widget>[
           TextButton(

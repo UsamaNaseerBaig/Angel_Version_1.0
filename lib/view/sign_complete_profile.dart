@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:angel_v1/controller/angel_profile_validation.dart';
 import 'package:angel_v1/view/angel_declaration.dart';
 import 'package:angel_v1/view/angel_identity.dart';
@@ -7,6 +5,7 @@ import 'package:angel_v1/view/angel_personal_detail.dart';
 import 'package:angel_v1/view/components.dart';
 import 'package:angel_v1/view/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 class SignCompleteProfile extends StatelessWidget {
@@ -57,7 +56,29 @@ class SignCompleteProfile extends StatelessWidget {
                 onTap: ()async{
                   AngelProfileValidator val = AngelProfileValidator();
                   bool status = await val.Validate(AngelIdentity.angel_id);
-                  status ? Navigator.pop(context):null;
+                  if (status == true){
+                    Fluttertoast.showToast(
+                        msg: "Profile Has been created Successfully",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0
+                    );
+                    Navigator.pop(context);
+                  }
+                  else{
+                    Fluttertoast.showToast(
+                        msg: "UnSuccessful",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0
+                    );
+                  }
 
                 },
               )

@@ -5,6 +5,7 @@ import 'package:angel_v1/view/angel_profile.dart';
 import 'package:angel_v1/view/angel_sign_up.dart';
 import 'package:angel_v1/view/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'components.dart';
 
@@ -36,7 +37,7 @@ class _MainPageState extends State<MainPage> {
               Text(
                 "Angel Log In",
                 textAlign: TextAlign.center,
-                style: kLabelStyle.copyWith(letterSpacing:6)
+                style: kLabelStyle.copyWith(letterSpacing:2)
               ),
               SizedBox(
                 height: 24,
@@ -55,6 +56,7 @@ class _MainPageState extends State<MainPage> {
                 height: 24,
               ),
               PinCodeTextField(
+                enablePinAutofill: false,
                 autoFocus: true,
                 keyboardType: TextInputType.number,
                 appContext: context,
@@ -87,7 +89,7 @@ class _MainPageState extends State<MainPage> {
 
               ),
               SizedBox(
-                height: 24,
+                height: 13,
               ),
               ActionButton(
                 name: "Register With New Account",
@@ -96,6 +98,24 @@ class _MainPageState extends State<MainPage> {
                   Navigator.pushNamed(context,AngelSignUp.id);
                 },
               ),
+              GestureDetector(
+                child: Text(
+                  "Need Help?",
+                  style: kDescStyle,
+                  textAlign: TextAlign.right,
+                ),
+                onTap: (){
+                  Fluttertoast.showToast(
+                      msg: "Call At 0320-1462009",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.yellow,
+                      textColor: Colors.white,
+                      fontSize: 16.0
+                  );
+                },
+              )
             ],
           ),
         ),

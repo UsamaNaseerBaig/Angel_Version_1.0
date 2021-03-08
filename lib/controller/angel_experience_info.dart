@@ -21,21 +21,9 @@ class AngelExperienceInfoO{
     print("Angel does not exits");
   }
 
-  //for past dealing
-  void AddPastDealing(String cnic_num)async{
-    //checking if angel exists
-    AngelPersonalDetail exp = AngelPersonalDetail();
-    await exp.AngelExist(cnic_num);
-    AngelCredential uploading_deal = AngelCredential();
-    AngelPersonalDetail.angel_exist ?
-    await uploading_deal.UploadDealings(dealing_image):
-    print("Angel does not exits");
-  }
+
 
   //for getting images regarding dealings from cloud
-Future<void> GetImages()async{
-    AngelCredential getting_images = AngelCredential();
-    await getting_images.GetPastDealings();
-  }
+
 
 }

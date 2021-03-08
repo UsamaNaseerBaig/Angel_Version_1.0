@@ -55,30 +55,28 @@ class AngelSignUp extends StatelessWidget {
                   desc: "Add a profile photo, describe your service, Enter your information, add your service information And create an awesome profile",
                 ),
               ),
-              ActionButton(//completing verification
-                name: "Profile Verification/Approval",
+              // ActionButton(//completing verification
+              //   name: "Profile Verification/Approval",
+              //   onTap: (){
+              //     //write code to complete profule
+              //     Navigator.pushNamed(context,AngelExperience.id);
+              //     print("completing verification profile");
+              //   },
+              // ),
+              // SizedBox(
+              //   height: 16,
+              // ),
+              // Expanded(
+              //   flex: 2,
+              //   child: ActionDescription(
+              //     desc: "In order to maintain full quality service to customers,Every angel shall meet minimum requirements of Experience and skill,Please provide as much information so that we may Approve you asap.",
+              //   )
+              // ),
+              ActionButton(
+                name: "Done",
                 onTap: (){
-                  //write code to complete profule
-                  Navigator.pushNamed(context,AngelExperience.id);
-                  print("completing verification profile");
+                  Navigator.pop(context);
                 },
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Expanded(
-                flex: 2,
-                child: ActionDescription(
-                  desc: "In order to maintain full quality service to customers,Every angel shall meet minimum requirements of Experience and skill,Please provide as much information so that we may Approve you asap.",
-                )
-              ),
-              Expanded(
-                child: ActionButton(
-                  name: "Done",
-                  onTap: (){
-                    Navigator.pop(context);
-                  },
-                ),
               )
             ],
           ),

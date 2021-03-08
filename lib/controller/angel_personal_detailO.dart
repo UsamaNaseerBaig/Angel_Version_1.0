@@ -9,7 +9,7 @@ class AngelPersonalDetailO{
 
   AngelPersonalDetailO({this.category,this.gender,this.address,this.cnic_name,this.dob});
 
-  void RegisterPersonalDetail(String cnic_num)async{
+  Future<void> RegisterPersonalDetail(String cnic_num)async{
 
     AngelPersonalDetail personal = AngelPersonalDetail(
       address: address,

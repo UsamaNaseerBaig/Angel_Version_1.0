@@ -276,3 +276,53 @@ class GetImageWidgetViaUrl extends StatelessWidget {
 
   }
 }
+
+class ConnectionTile extends StatelessWidget {
+
+  final String title;
+  final String desc;
+  final String budget;
+  final String time;
+  final String name;
+  final String number;
+  final String Date;
+
+
+  final Function ontap;
+  ConnectionTile({this.name,this.Date,this.number,this.desc,this.title,this.time,this.budget,this.ontap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("From: ${name}",style: kTextStyle,),
+            Text("Message: ${title}",style: kTextStyle,),
+            Text(desc,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Approx. Budget: ${budget} RS/-",style: kTextStyle,),
+                Text(time,style: kTextStyle,),
+              ],
+            ),
+            SizedBox(
+              height: 24,
+              child: Divider(
+                color: kTextColor,
+                indent: 13,
+                endIndent: 22,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -3,6 +3,7 @@ import 'package:angel_v1/view/angel_identity.dart';
 import 'package:angel_v1/view/components.dart';
 import 'package:angel_v1/view/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AngelPersonalDetail extends StatefulWidget {
   static String id = "AngelPersonalDetail";
@@ -123,7 +124,7 @@ class _AngelPersonalDetailState extends State<AngelPersonalDetail> {
             ),
             ActionButton(
               name: "Complete Personal Detail",
-              onTap: (){
+              onTap: ()async{
                if (AngelIdentity.angel_id != null) {
                    if (gender != null && category != null && full_name != null && home_address != null ){
                      AngelPersonalDetailO personal_detail= AngelPersonalDetailO(
@@ -133,13 +134,28 @@ class _AngelPersonalDetailState extends State<AngelPersonalDetail> {
                        gender: gender,
                        category: category
                      );
-                     personal_detail.RegisterPersonalDetail(AngelIdentity.angel_id);
-                     // print(AngelIdentity.angel_id);
-                     // print(gender);
-                     // print(category);
-                     // print(full_name);
-                     // print(home_address);
-                     // print(date);
+                     await personal_detail.RegisterPersonalDetail(AngelIdentity.angel_id);
+                     Fluttertoast.showToast(
+                         msg: "Personal Detail Has been added Successfully",
+                         toastLength: Toast.LENGTH_SHORT,
+                         gravity: ToastGravity.BOTTOM,
+                         timeInSecForIosWeb: 1,
+                         backgroundColor: Colors.green,
+                         textColor: Colors.white,
+                         fontSize: 16.0
+                     );
+                     Navigator.pop(context);
+                   }
+                   else{
+                     Fluttertoast.showToast(
+                         msg: "Unsuccessful",
+                         toastLength: Toast.LENGTH_SHORT,
+                         gravity: ToastGravity.BOTTOM,
+                         timeInSecForIosWeb: 1,
+                         backgroundColor: Colors.red,
+                         textColor: Colors.white,
+                         fontSize: 16.0
+                     );
                    }
                }
               },

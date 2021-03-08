@@ -19,11 +19,9 @@ class AngelCredential{
   final  _storageRef = FirebaseStorage.instance.ref();
   final  _firestore = FirebaseFirestore.instance;
 
-  AngelCredential({this.number,this.password});
+  AngelCredential({this.number,this.password,this.cnic});
 
   Future<List<String>> UploadImages(List<File> image_arr,String name)async{
-
-
     for (var image in image_arr) {
       AngelPastDealing.image_count++;
       print(AngelPastDealing.image_count);
@@ -39,13 +37,10 @@ class AngelCredential{
   void AddIdentity(String cnic_num,List<File> image)async {
     print("i am in identity");
     cnic = cnic_num;
-    await UploadImages(image,"Cnic");
-    print(imageList);
     var angel_proof={
       "cnic" : cnic,
       "number" : number,
       "password": password,
-      "cnic_photos":imageList
     };
     var angel_identity={
       "identity_proof" : angel_proof
@@ -55,12 +50,28 @@ class AngelCredential{
 
   }
 
-  Future<bool> CreateNewAngel()async {
+  Future<bool> AngelExist(String cnic_num)async{
+    var angel_ref = _firestore.collection("ANGEL").doc(cnic_num);
+    var doc = await angel_ref.get();
+    if (!doc.exists){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+
+  Future<bool> CreateNewAngel(String cnic)async {
     try{
-      final new_angel=await _auth.createUserWithEmailAndPassword(
-          email: "${number}@Angel.com",
-          password: password);
-      return new_angel != null ? true: false;
+      bool create_status = false;
+      create_status =  await AngelExist(cnic);
+      if (create_status == false){
+        final new_angel=await _auth.createUserWithEmailAndPassword(
+            email: "${number}@Angel.com",
+            password: password);
+        return new_angel != null ? true: false;
+      }
+      return false;
     }
     catch(e)
     {
@@ -99,21 +110,6 @@ class AngelCredential{
     var res = await ref.update({'past_dealings':deal_images}).then((value) => AngelExperienceInfoO.deal_status = true).catchError((onError)=>print("$onError failed to update"));
   }
 
-  //to get Past Dealings
-  Future<List<dynamic>> GetPastDealings()async{
-    print("getting past dealings");
-    var list=[];
-    print(AngelProfile.cnic);
-      AngelPastDealing.image_stream =_firestore.collection("ANGEL").doc(AngelProfile.cnic).snapshots();
-      await for (var snapshot in _firestore.collection("ANGEL").doc(AngelProfile.cnic).snapshots()){
-              list =  snapshot.data()['past_dealings'];
-                image_count = list.length;
-                print("below past dealing image length");
-                print(image_count);
-      }
-
-    return list;
-  }
   //log in method
   Future<bool> LogInAngel()async {
     try{
@@ -142,7 +138,7 @@ class AngelCredential{
     String num = loggedIn.email;
     num = num.split('@')[0];
     final QuerySnapshot snap =await _firestore.collection("ANGEL")
-        .where('identity_proof.number',isEqualTo: num).getDocuments();
+        .where('identity_proof.number',isEqualTo: num).get();
     var pro ={};
      snap.docs.forEach((DocumentSnapshot element) {
       pro = element.data();

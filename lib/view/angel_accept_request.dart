@@ -1,15 +1,48 @@
+import 'package:angel_v1/view/billing_view.dart';
 import 'package:flutter/material.dart';
 import 'components.dart';
 import 'constants.dart';
-class AngelAcceptRequest extends StatelessWidget {
-  static String id = "/AngelAcceptRequest";
+import 'package:url_launcher/url_launcher.dart';
 
-  int min;
-  double price;
-  double charges;
+
+class AngelAcceptRequest extends StatefulWidget {
+  static String id = "/AngelAcceptRequest";
+  static String cust_number = "";
+
+  @override
+  _AngelAcceptRequestState createState() => _AngelAcceptRequestState();
+}
+
+class _AngelAcceptRequestState extends State<AngelAcceptRequest> {
+
+  double charges=0;
+
+  void customLaunch(command)async{
+    if (await  canLaunch(command)) {
+    await launch(command);
+    } else {
+    throw 'Could not launch $command';
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    final AcceptRequestArgs args = ModalRoute.of(context).settings.arguments;
+    charges = double.parse(args.budget)/100;
+    AngelAcceptRequest.cust_number = args.number;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: kFillerColour,
+        onPressed: (){
+          Navigator.push(
+              context, new MaterialPageRoute(
+              builder: (context) => new AngelBilling()
+          )
+          );
+        },
+        child: Icon(Icons.add_a_photo,color: kTextColor,),
+      ),
       resizeToAvoidBottomInset: false,
       backgroundColor: kbackgroundColor,
       appBar: AppBar(
@@ -19,15 +52,14 @@ class AngelAcceptRequest extends StatelessWidget {
       ),
       body: SafeArea(
         child: Column(//tab bar for angel earning status
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Expanded
               (
-                flex: 3,
                 child: Column(
                   children: [
                     RequestTile(
-                      title: "June 2020",
+                      title: args.Date,
                       desc: "Date",
                       icon: Icon(Icons.calendar_today),
                     ),
@@ -40,7 +72,7 @@ class AngelAcceptRequest extends StatelessWidget {
                       ),
                     ),
                     RequestTile(
-                      title: "60 minutes",
+                      title: "30-60 minutes",
                       desc: "Approx. Shopping Time",
                       icon: Icon(Icons.account_circle),
                     ),
@@ -53,7 +85,7 @@ class AngelAcceptRequest extends StatelessWidget {
                       ),
                     ),
                     RequestTile(
-                      title: "RS/-30,000 - 45,000 Rupees",
+                      title: "${args.budget}",
                       desc: "Approx. Budget",
                       icon: Icon(Icons.attach_money),
                     ),
@@ -68,14 +100,42 @@ class AngelAcceptRequest extends StatelessWidget {
                   ],
                 )
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RaisedButton(
+                  onPressed: ()=>customLaunch("tel:${args.number}"),
+                  padding: EdgeInsets.all(12),
+                  color: kFillerColour,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100)),
+                  child: Container(
+                    child: Icon(Icons.call,color: Colors.green.shade800,),
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                RaisedButton(
+                  onPressed: ()=>customLaunch('sms:${args.number}'),
+                  padding: EdgeInsets.all(12),
+                  color: Colors.deepPurple.shade100,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100)),
+                  child: Container(
+                    child: Icon(Icons.message,color: Colors.deepPurple,),
+                  ),
+                ),
+              ],
+            ),
             Expanded(
-                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     RequestTile(
-                      title: "RS/-300 - 450 Rupees",
-                      desc: "Charges",
+                      title: "RS/-${charges} Rupees",
+                      desc: "Estimate Charges",
                       icon: Icon(Icons.attach_money),
                     ),
                     SizedBox(
@@ -86,17 +146,23 @@ class AngelAcceptRequest extends StatelessWidget {
                         endIndent: 22,
                       ),
                     ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 5,right: 5,left: 15),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text("ڈیل طے کرنے کیلئے کسٹمر کو کال یا ایس ایم ایس کریں-",style: kDescStyle.copyWith(color: Colors.red),),
+                          Text("اپنے صارف کے لئے بہترین خریدیں-",style: kDescStyle.copyWith(color: Colors.red),),
+                          Text("خریداری کے بعد،کل فیس کے لئے رسید اپ لوڈ کریں-",style: kDescStyle.copyWith(color: Colors.red),),
+                          Text("کل فیس کے لئے نیچے کیمرا بٹن پر کلک کریں-",style: kDescStyle.copyWith(color: Colors.red),),
+                        ],
+                      ),
+                    ),
                   ],
                 )
             ),
-            ActionButton(
-              name: "Accept & Start Shopping",
-              onTap: () {
-                showModalBottomSheet<void>(context: context,builder: (BuildContext context){
-                  return AddActualDetail();
-                });
-              }
-            )
+
           ],
         ),
       ),
@@ -144,4 +210,12 @@ class AddActualDetail extends StatelessWidget {
       ),
     );
   }
+}
+
+class AcceptRequestArgs{
+  String Date;
+  String number;
+  String name;
+  String budget;
+  AcceptRequestArgs({this.Date,this.number,this.name,this.budget});
 }
