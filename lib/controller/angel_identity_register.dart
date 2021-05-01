@@ -20,7 +20,7 @@ class AngelIdentityO{
   }
 
   Future<bool> Register()async {
-    newAngel=AngelCredential(
+    newAngel=AngelCredential(//giving shape to object
         number: number,
         password: password,
         cnic: cnic

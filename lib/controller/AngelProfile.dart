@@ -1,7 +1,5 @@
 import 'package:angel_v1/model/AngelCredential.dart';
-import 'package:angel_v1/view/angel_profile.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 
 class AngelProfileController{
 
